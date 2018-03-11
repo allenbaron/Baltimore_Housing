@@ -29,7 +29,6 @@ dl_date <- Sys.Date()
 save_file <- gsub("-", "", dl_date) %>%
     paste0("~/Housing/", ., "-BPD_Part1_crime.csv")
 BC_crime_url <- "https://data.baltimorecity.gov/api/views/wsfq-mvij/rows.csv?accessType=DOWNLOAD"
-
 ```
 
 ```{r}
@@ -62,7 +61,7 @@ problems(crime)
 
 
 ## TIME adjustment
-Just realized that time doens't really matter for my purposes. I'm just interested in date.
+Just realized that time doens't really matter for my purposes. I'm just interested in date... but, hey, no harm in practicing!
 
 ```{r time_errors}
 time_err_ind <- !grepl(":", crime$CrimeTime)
@@ -335,3 +334,25 @@ str(crime)
 write_csv(crime, path = paste0(sub(".csv$", "", save_file), "-WEIGHTED.csv"))
 ```
 
+
+# Attempted Google Fusion Table
+
+After loading the data into a new fusion table, I set the location to use `latitude` and `longitude`, chose heat map, set the weights to `overall_wt`, and attempted various positions for the "radius". The resulting map was unexpectedly sparse.
+
+<div style="text-align:center" markdown="1">
+![**Baltimore City Crime Map**](BC_heatmap_noFilter.PNG){ width=50% }
+</div>
+
+It turns out the fusion table map is using the [MAPS API Heatmap layer](https://developers.google.com/maps/documentation/javascript/layers#JSHeatMaps) which cannot handle mapping more than [1,000 rows](https://support.google.com/fusiontables/answer/1152262). No wonder the data was sparse!
+
+At this point I realized the map wasn't going to be what I hoped. But, out of curiosity, I adjusted the map by filtering the data. I was able to reduce the number of rows to 998 by selecting only the data occurring between 2018-01-01 and 2018-03-10 and setting a filter to include only the top 6 worse crimes (in my opinion: Homicide, Agg. Assault, Rape, Shooting, Robbery - Carjacking, and Robbery - Residence).
+
+<div style="text-align:center" markdown="1">
+![**Baltimore City Crime Map - Filtered**](BC_heatmap_wFilter.PNG){ width=50% }
+</div>
+
+Sheesh! Even with only about 2 months and 6 types of crime Baltimore City at this level looks like a pretty dangerous place (except maybe the Roland Park area).
+
+If I zoom in further to either of these maps to look at the data on a neighborhood level the individual values become too sparse to be useful. At this zoom level, the safer looking areas probably look safer because of missing data, more so than _actually_ being safer.
+
+**If the whole point of this is to identify safer areas for a family to live in. I'm going to need a new approach!**

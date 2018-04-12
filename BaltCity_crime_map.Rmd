@@ -11,6 +11,8 @@ library(caret)
 library(rattle)
 library(vcd)
 library(lubridate)
+library(ggmap)
+library(rvest)
 ```
 
 
